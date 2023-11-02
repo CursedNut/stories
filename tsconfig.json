@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution":"node",
+    "strict": true,
+    "preserveConstEnums": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noErrorTruncation": true,
+    "noUncheckedIndexedAccess": true,
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "paths": {
+      "@": ["./src/*"]
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
