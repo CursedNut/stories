@@ -25,13 +25,17 @@ export default {
             transpileOnly: true
           }
         }]
-      }
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
     ]
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     alias: {
-      "@": path.resolve(__dirname, 'src')
+      "src": path.resolve(__dirname, 'src')
     }
   },
   plugins: [
