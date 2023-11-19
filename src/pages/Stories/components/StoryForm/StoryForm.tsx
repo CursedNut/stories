@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input } from 'antd';
-import { Story } from '../StoryCard/StoryCard';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { Controller } from "react-hook-form";
+import type { Story } from 'src/data';
 
 const { TextArea } = Input;
 
@@ -12,20 +12,22 @@ interface StoryFormProps extends Story {
 
 type FieldType = {
   title: string;
+  description?: string;
   content: string;
 };
 
 export const StoryForm: React.FC<StoryFormProps> = (props) => {
-  const { id, title, content, onClose } = props;
+  const { id, title, description, content, onClose } = props;
   const [confirmLoading, setConfirmLoading] = useState(false);
   const {
     control,
-    getValues,
-    formState
+    formState,
+    handleSubmit
   } = useForm({
     defaultValues: {
       title,
-      content
+      description,
+      content,
     }
   });
 
@@ -37,6 +39,8 @@ export const StoryForm: React.FC<StoryFormProps> = (props) => {
     //   setConfirmLoading(false);
     //   onClose()
     // }, 2000);
+
+    console.log('Clicked ok button');
   };
 
   const handleCancel = () => {
@@ -44,37 +48,24 @@ export const StoryForm: React.FC<StoryFormProps> = (props) => {
     onClose();
   };
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-    console.log(formState)
+  const onSubmit: SubmitHandler<FieldType> = (data) => {
+    console.log(data)
   };
 
   return (
     <Modal
-      title={title}
+      title="Настройки"
       open={!!id}
       onOk={handleOk}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       okButtonProps={{
         htmlType: 'submit',
-        form: 'basic'
+        form: 'settings'
       }}
+      width={600}
     >
-      <Form
-        name="basic"
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
-        style={{ maxWidth: 600 }}
-        initialValues={getValues()}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
+      <form id="settings" name="settings" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
         <Controller
           control={control}
           name="title"
@@ -84,6 +75,7 @@ export const StoryForm: React.FC<StoryFormProps> = (props) => {
               label="Title"
               name={field.name}
               rules={[{ required: true, message: 'Required field' }, { max: 20, message: 'be longer than 20 characters' }]}
+              valuePropName={field.name}
             >
               <Input {...field} placeholder='title' />
             </Form.Item>
@@ -97,13 +89,30 @@ export const StoryForm: React.FC<StoryFormProps> = (props) => {
             <Form.Item<FieldType>
               label="Content"
               name={field.name}
+              valuePropName={field.name}
               rules={[{ required: true, message: 'Required field' }]}
             >
               <TextArea {...field} placeholder='content' rows={6} />
             </Form.Item>
           }
         />
-      </Form>
+
+        <Controller
+          control={control}
+          name="description"
+          rules={{ required: true }}
+          render={({ field }) =>
+            <Form.Item<FieldType>
+              label="Content"
+              name={field.name}
+              valuePropName={field.name}
+              rules={[{ required: true, message: 'Required field' }]}
+            >
+              <TextArea {...field} placeholder='content' rows={6} />
+            </Form.Item>
+          }
+        />
+      </form>
     </Modal>
   );
 }

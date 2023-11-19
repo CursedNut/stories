@@ -1,19 +1,10 @@
-import React, { FC, useCallback, useMemo, useState } from "react";
-import { Card, Dropdown, MenuProps, Tooltip } from 'antd';
-import { EditOutlined, EllipsisOutlined, SettingOutlined, ReadOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import React, { FC, SyntheticEvent, useCallback, useMemo } from "react";
+import { Card, FloatButton, Tooltip } from 'antd';
+import { SettingOutlined, ReadOutlined, InfoCircleOutlined, HeartOutlined, EditOutlined } from '@ant-design/icons';
+import { StoryCoverImage } from "../StoryCoverImage/StoryCoverImage";
+import { Story, StoryType } from "src/data";
 
 const { Meta } = Card;
-
-//TODO: to api
-export interface Story {
-  id: string;
-  author: string;
-  title: string;
-  descriprion?: string;
-  content: string;
-  publishDate: string | Date;
-  picture?: string;
-}
 
 interface StoryCardProps extends Story {
   onInfo: () => void;
@@ -22,83 +13,62 @@ interface StoryCardProps extends Story {
   onDelete?: () => void;
 }
 
-
-
 export const StoryCard: FC<StoryCardProps> = (props) => {
-  const { id, title, descriprion, content, author, picture, onEdit, onInfo, onRead } = props;
-  const [open, setOpen] = useState(false);
+  const { title, description, content, author, picture, onEdit, onInfo, onRead } = props;
 
-  const items = [
-    {
-      label: 'Edit',
-      key: '1',
-      onClick: onEdit
-    },
-    {
-      label: 'Русский',
-      key: '2',
-    },
-    {
-      label: 'Español',
-      key: '3',
-    },
-  ];
+  const handleReadClick = useCallback(<T,>(e: SyntheticEvent<T>) => {
+    e.stopPropagation();
+    onRead();
+  }, [onRead]);
 
-  const handleMenuClick = useCallback(() => {
-    setOpen(false);
-  }, []);
-  const handleOpenChange = useCallback((flag: boolean) => {
-    setOpen(flag);
+  const handleFavoritesClick = useCallback(<T,>(e: SyntheticEvent<T>) => {
+    e.stopPropagation();
   }, []);
 
-  const coverImage = useMemo(() => {
-    if (picture) {
-      return (
-        <div style={{ height: '200px', overflow: 'hidden', background: '#333', border: '1px solid #f0f0f0' }}>
-          <img style={{ width: '100%', objectFit: 'cover', height: '200px' }} alt={title} src={picture} />
-        </div>
-      )
-    }
+  const handleSettingsClick = useCallback(<T,>(e: SyntheticEvent<T>) => {
+    e.stopPropagation();
+    onEdit();
+  }, []);
+
+  const coverImage = useMemo(() => <StoryCoverImage title={title} picture={picture} />, [title, picture]);
+
+  const actions = useMemo(() => [
+    <Tooltip title="Об истории">
+      <InfoCircleOutlined key={StoryType.info} />
+    </Tooltip>,
+    <Tooltip title="Читать">
+      <ReadOutlined key={StoryType.read} onClick={handleReadClick} />
+    </Tooltip>,
+    <Tooltip title="В избранное">
+      <HeartOutlined key={StoryType.favorites} onClick={handleFavoritesClick} />
+    </Tooltip>,
+    <Tooltip title="Настройки">
+      <SettingOutlined key={StoryType.settings} onClick={handleSettingsClick} />
+    </Tooltip>
+  ], [handleReadClick, handleFavoritesClick, handleSettingsClick]);
+
+  const cardTitle = useMemo(() => {
+    const cardTitleText = author ? `${author}${'. '}${title}` : title;
 
     return (
-      <div style={{ height: '200px', overflow: 'hidden', background: '#fff', border: '1px solid #f0f0f0' }}>
-        <img style={{
-          display: 'block', width: 'auto', height: '100%', margin: 'auto'
-        }} alt={title} src='https://ggonline.kz/local/templates/main_template/images/crash_photo.jpeg' />
-      </div>
-    )
-  }, [picture]);
+      <Tooltip title={cardTitleText} placement="bottom">
+        {cardTitleText}
+      </Tooltip>
+    );
+  }, [title, author]);
+
+  const cardDescription = useMemo(() => (
+    <div style={{ height: '66px', overflow: 'hidden' }}>{description || content}</div>
+  ), [description, content]);
 
   return (
     <Card
       cover={coverImage}
-      actions={[
-        <Tooltip title="Об истории">
-          <InfoCircleOutlined key="info" onClick={onInfo} />
-        </Tooltip>,
-        <Tooltip title="Читать">
-          <ReadOutlined key="read" onClick={onRead} />
-        </Tooltip>,
-        <Tooltip title="Заметки">
-          <EditOutlined key="edit" onClick={onEdit} />
-        </Tooltip>,
-        <SettingOutlined key="setting" />,
-        // <EllipsisOutlined key="ellipsis" />,
-      ]}
+      actions={actions}
       hoverable
-    // title={title}
-    // extra={<EditOutlined key="edit" onClick={onEdit} />}
-    // onClick={onEdit}
+      onClick={onInfo}
     >
-      <Meta
-        // avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${id}`} />}
-        title={
-          <Tooltip title={`${author}${'. '}${title}`} placement="bottom">
-            {author}{'. '}{title}
-          </Tooltip>
-        }
-        description={<div style={{ height: '90px', overflow: 'hidden' }}>{descriprion || content}</div>}
-      />
+      <Meta title={cardTitle} description={cardDescription} />
     </Card>
-  )
+  );
 }

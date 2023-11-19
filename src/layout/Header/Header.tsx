@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Avatar, Button, Drawer, Dropdown, Layout, MenuProps } from 'antd';
+import { Button, Drawer, Dropdown, Layout, MenuProps, Space } from 'antd';
 import { cyan } from '@ant-design/colors';
-import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { MenuOutlined, TranslationOutlined, UserOutlined } from '@ant-design/icons';
+import { UserDrawer } from '../UserDrawer/UserDrawer';
 
 const { Header: AntHeader } = Layout;
 
@@ -15,6 +15,10 @@ const headerStyle: React.CSSProperties = {
   height: 64,
   paddingInline: 20,
   backgroundColor: cyan[8],
+};
+
+const headerLeftSideStyle: React.CSSProperties = {
+  marginLeft: 'auto'
 };
 
 const items: MenuProps['items'] = [
@@ -33,35 +37,40 @@ const items: MenuProps['items'] = [
 ];
 
 export const Header = () => {
-  const { t } = useTranslation();
-  const [lang, setLang] = useState('en');
-  const [open, setOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+  console.log(i18n.language)
+  const [lang, setLang] = useState(() => i18n.language || 'ru');
+  const [langOpen, setLangOpen] = useState(false);
+  const [userDrawerOpen, setUserDrawerOpen] = useState(false);
+  const [menuDrawerOpen, setMenuDrawerOpen] = useState(false);
 
-  const showDrawer = useCallback(() => {
-    setDrawerOpen(true);
-  }, []);
+  const toggleUserDrawerOpen = useCallback(() => setUserDrawerOpen(!userDrawerOpen), [userDrawerOpen]);
 
-  const onDrawerClose = useCallback(() => {
-    setDrawerOpen(false);
-  }, []);
+  const toggleMenuDrawerOpen = useCallback(() => setMenuDrawerOpen(!menuDrawerOpen), [menuDrawerOpen]);
 
   const handleMenuClick = useCallback((e: Parameters<NonNullable<MenuProps['onClick']>>[0]) => {
     setLang(e.key)
-    setOpen(false);
+    setLangOpen(false);
     i18n.changeLanguage(e.key)
   }, []);
 
   const handleOpenChange = useCallback((flag: boolean) => {
-    setOpen(flag);
+    setLangOpen(flag);
   }, []);
 
   return (
     <>
       <AntHeader style={headerStyle}>
-        <Button type='link' style={{ color: '#fff' }} size='small' shape='circle' icon={<MenuOutlined />} onClick={showDrawer} />
+        <Button
+          ghost
+          style={{ border: 'none' }}
+          size='small'
+          shape='circle'
+          icon={<MenuOutlined />}
+          onClick={toggleMenuDrawerOpen}
+        />
         {t('header')}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
+        <Space style={headerLeftSideStyle}>
           <Dropdown
             menu={{
               items,
@@ -69,30 +78,27 @@ export const Header = () => {
               activeKey: lang
             }}
             onOpenChange={handleOpenChange}
-            open={open}
+            open={langOpen}
           >
             <Button type='primary' size='small' shape='circle' icon={<TranslationOutlined />} />
           </Dropdown>
-
-          {/* <Dropdown
-            menu={{
-              items,
-              onClick: handleMenuClick,
-              activeKey: lang
-            }}
-            onOpenChange={handleOpenChange}
-            open={open}
-          >
-            <Button type='primary' size='small' shape='circle' icon={<UserOutlined />} />
-          </Dropdown> */}
-        </div>
+          <Button
+            size='small'
+            shape='circle'
+            ghost
+            icon={<UserOutlined />}
+            onClick={toggleUserDrawerOpen}
+          />
+        </Space>
       </AntHeader>
+
+      <UserDrawer open={userDrawerOpen} onClose={toggleUserDrawerOpen} />
+
       <Drawer
         title='Basic Drawer'
         placement='left'
-        closable={false}
-        onClose={onDrawerClose}
-        open={drawerOpen}
+        onClose={toggleMenuDrawerOpen}
+        open={menuDrawerOpen}
       >
         <p>Some contents...</p>
         <p>Some contents...</p>

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Modal } from 'antd';
-import { Story } from '../StoryCard/StoryCard';
+import { Story } from 'src/data';
 
 interface StoryInfoFormProps extends Story {
   onClose: () => void;
@@ -8,7 +8,7 @@ interface StoryInfoFormProps extends Story {
 
 
 export const StoryInfoForm: React.FC<StoryInfoFormProps> = (props) => {
-  const { id, title, author, descriprion, content, picture, onClose } = props;
+  const { id, title, author, description, content, picture, onClose } = props;
   const [confirmLoading, setConfirmLoading] = useState(false);
 
   const handleOk = () => {
@@ -36,7 +36,7 @@ export const StoryInfoForm: React.FC<StoryInfoFormProps> = (props) => {
       onCancel={handleCancel}
     >
       {coverImage}
-      {descriprion || content.slice(0, 250)}
+      {description || content.slice(0, 250)}
     </Modal>
   );
 }

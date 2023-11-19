@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
-import { Story } from '../StoryCard/StoryCard';
+import { Story } from 'src/data';
 
 interface StoryReadFormProps extends Story {
   onClose: () => void;
