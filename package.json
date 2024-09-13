@@ -1,13 +1,15 @@
 {
-  "name": "my-first-project-3000",
+  "name": "stories",
   "version": "1.0.0",
   "author": "Anna Ushakova",
   "type": "module",
   "scripts": {
     "start": "webpack serve -c ./webpack.config.js",
-    "build": "webpack"
+    "build": "webpack",
+    "start:server": "json-server --watch src/data/data.json --port 3004"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.8.4",
     "@types/react": "^18.2.34",
     "@types/react-dom": "^18.2.14",
     "antd": "^5.10.3",
@@ -28,6 +30,7 @@
     "webpack-cli": "^5.1.4"
   },
   "devDependencies": {
+    "json-server": "^0.17.4",
     "webpack-dev-server": "^4.15.1"
   }
 }
